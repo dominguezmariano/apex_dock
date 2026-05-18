@@ -27,7 +27,8 @@ ApexDocker/
 └── sql/                        SQL helpers (manuales, no se ejecutan solos)
     ├── setup_apex_admin.sql    Crear/resetear admin de APEX
     ├── uninstall_ords.sql      Drop de schemas ORDS
-    └── cleanup_ords_synonyms.sql  Limpiar synonyms huérfanos
+    ├── cleanup_ords_synonyms.sql  Limpiar synonyms huérfanos
+    └── grant_network_acl.sql   Otorgar ACL de red a un schema (fix ORA-24247)
 ```
 
 ## Primer arranque (desde cero)
@@ -121,6 +122,8 @@ Remove-Item -Recurse -Force apex-images
 - **ORDS en restart loop con "config directory empty"** → ORDS ya está instalado en la DB pero el volumen `apex-ords-config` está vacío. Correr [sql/uninstall_ords.sql](sql/uninstall_ords.sql) para hacer drop de los schemas y dejar que reinstale limpio.
 
 - **Cambiar password del ADMIN de APEX** → editar `.env`, correr [sql/setup_apex_admin.sql](sql/setup_apex_admin.sql) con: `docker cp sql/setup_apex_admin.sql apex-db:/tmp/ && docker exec apex-db sqlplus -S sys/$env:ORACLE_PWD@localhost:1521/FREEPDB1 as sysdba @/tmp/setup_apex_admin.sql`
+
+- **`ORA-24247: network access denied by access control list (ACL)`** al hacer un REST desde APEX o PL/SQL → falta otorgar ACL de red al schema. Editar el `DEFINE schema_name` en [sql/grant_network_acl.sql](sql/grant_network_acl.sql) y correr (en PowerShell, notar las comillas alrededor de `"@/tmp/..."`): `docker cp sql/grant_network_acl.sql apex-db:/tmp/ ; docker exec apex-db sqlplus -S "sys/$env:ORACLE_PWD@localhost:1521/FREEPDB1 as sysdba" "@/tmp/grant_network_acl.sql"`
 
 ## Notas
 
