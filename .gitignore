@@ -1,7 +1,8 @@
 .env
 conn_string.txt
 *.log
-downloads/
-apex-images/
 LLEVAR/
 datos.txt
+downloads/
+logs/
+apex-images/
