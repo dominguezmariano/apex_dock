@@ -16,6 +16,7 @@ services:
       - ./init-scripts:/opt/oracle/scripts/setup
       - ./downloads/apex-latest.zip:/opt/oracle/apex-installer/apex-latest.zip:ro
       - ./apex-images:/opt/oracle/apex-images
+      - ./apex-app:/opt/oracle/apex-app:ro
     healthcheck:
       test: ["CMD", "/opt/oracle/checkDBStatus.sh"]
       interval: 30s

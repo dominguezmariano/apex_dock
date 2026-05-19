@@ -20,7 +20,12 @@ ApexDocker/
 ├── downloads/
 │   └── apex-latest.zip         Instalador de APEX (lo bajás vos, ~300 MB)
 ├── init-scripts/
-│   └── 01_install_apex.sh      Auto-instalación de APEX en el primer boot
+│   ├── 01_install_apex.sh      Auto-instalación de APEX en el primer boot
+│   └── 02_install_app.sh       Auto-instala workspace + app + schema objects (ver apex-app/)
+├── apex-app/                   Exports del workspace, app y objetos DB para auto-install
+│   ├── 01_workspace.sql        Export del workspace APEX
+│   ├── 02_app.sql              Export de la app APEX
+│   └── 03_schema/              Objetos DB del parsing schema (tables, packages, etc.)
 ├── apex-images/                Estáticos de APEX que ORDS sirve en /i/
 ├── scripts/
 │   └── download-apex.ps1       Helper para bajar el zip
