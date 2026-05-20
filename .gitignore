@@ -6,3 +6,7 @@ datos.txt
 downloads/
 logs/
 apex-images/
+
+# Claude Code: settings y locks per-usuario, no compartibles
+.claude/*.local.json
+.claude/*.lock
