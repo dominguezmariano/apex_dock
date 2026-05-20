@@ -58,6 +58,12 @@ services:
     volumes:
       - ords-config:/etc/ords/config
       - ./apex-images:/opt/oracle/apex/images:ro
+      # La imagen oficial corre los .sh de /ords-entrypoint.d antes de iniciar
+      # ORDS (path hardcodeado en /usr/bin/docker-entrypoint.sh linea 21). Usamos
+      # ese mecanismo para habilitar plsql.gateway.mode, que esta deshabilitado
+      # por default en ORDS 24+ y hace que las URLs /ords/apex y /ords/apex_admin
+      # devuelvan 404.
+      - ./ords-entrypoint:/ords-entrypoint.d:ro
     networks:
       - apex-net
 
