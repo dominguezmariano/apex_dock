@@ -71,7 +71,7 @@ ALTER SESSION SET CONTAINER = FREEPDB1;
 DECLARE
   v_ws_id NUMBER;
 BEGIN
-  SELECT workspace_id INTO v_ws_id FROM apex_workspaces WHERE workspace_name = UPPER('$WORKSPACE_NAME');
+  SELECT workspace_id INTO v_ws_id FROM apex_workspaces WHERE workspace = UPPER('$WORKSPACE_NAME');
   APEX_APPLICATION_INSTALL.SET_WORKSPACE_ID(v_ws_id);
   APEX_APPLICATION_INSTALL.SET_SCHEMA(UPPER('$PARSING_SCHEMA'));
 END;
@@ -132,3 +132,8 @@ EXIT;
 SQL
 
 log "App install completed"
+
+# Marcador para que el entrypoint en docker-compose.yml sepa que ya inicializamos
+# todo (APEX + workspace + app + schema). Sin este archivo, el proximo boot
+# borraria la DB pensando que es la prebuilt de la imagen.
+touch /opt/oracle/oradata/.user_init_done

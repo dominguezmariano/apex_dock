@@ -11,6 +11,19 @@ APEX_IMAGES_DEST="/opt/oracle/apex-images"
 
 log() { echo "==> [apex-init] $*"; }
 
+# Forzar el password de SYS/SYSTEM al valor de ORACLE_PWD del .env. Es defensivo:
+# en algunas combinaciones de version + entrypoint custom, dbca prompted
+# interactivamente durante el primer init y el SYS quedo con un password
+# distinto del que estamos pasando, desincronizando ORDS. Como nos conectamos
+# por OS auth (/ as sysdba), no necesitamos saber el password actual.
+log "Sincronizando password de SYS/SYSTEM con ORACLE_PWD del .env"
+sqlplus -S / as sysdba <<SQL
+WHENEVER SQLERROR CONTINUE
+ALTER USER SYS IDENTIFIED BY "${ORACLE_PWD}";
+ALTER USER SYSTEM IDENTIFIED BY "${ORACLE_PWD}";
+EXIT;
+SQL
+
 if [ ! -f "$APEX_ZIP" ]; then
   log "$APEX_ZIP not found. Mount apex-latest.zip into the container to auto-install APEX. Skipping."
   exit 0

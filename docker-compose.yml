@@ -11,6 +11,21 @@ services:
       ORACLE_CHARACTERSET: AL32UTF8
       APEX_ADMIN_PWD: ${APEX_ADMIN_PWD}
       APEX_ADMIN_EMAIL: ${APEX_ADMIN_EMAIL}
+    # Las imagenes recientes de Oracle Free (26ai) traen una DB pre-construida
+    # adentro de la imagen con el marcador .FREE.created ya creado, lo que hace
+    # que runOracle.sh skipee los init scripts. Este entrypoint chequea nuestro
+    # propio marcador (.user_init_done) y, si no esta, borra la DB prebuilt
+    # para forzar un init real que corre /opt/oracle/scripts/setup/*.sh.
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+        if [ ! -f /opt/oracle/oradata/.user_init_done ]; then
+          echo "==> [bootstrap] Borrando DB pre-construida de la imagen para forzar init scripts"
+          rm -f /opt/oracle/oradata/.FREE.created
+          rm -rf /opt/oracle/oradata/FREE
+        fi
+        exec /opt/oracle/runOracle.sh
     volumes:
       - oradata:/opt/oracle/oradata
       - ./init-scripts:/opt/oracle/scripts/setup
