@@ -32,8 +32,13 @@ services:
       - ./downloads/apex-latest.zip:/opt/oracle/apex-installer/apex-latest.zip:ro
       - ./apex-images:/opt/oracle/apex-images
       - ./apex-app:/opt/oracle/apex-app:ro
+    # service_healthy = DB up Y init completo (02_install_app.sh termino y dejo
+    # el marker .user_init_done). Asi ORDS, que tiene depends_on: service_healthy,
+    # no empieza a reintentar conectar mientras APEX se esta instalando y, mas
+    # importante, si el init falla a la mitad el container queda visiblemente
+    # unhealthy en vez de aparentar estar OK.
     healthcheck:
-      test: ["CMD", "/opt/oracle/checkDBStatus.sh"]
+      test: ["CMD-SHELL", "/opt/oracle/checkDBStatus.sh && test -f /opt/oracle/oradata/.user_init_done"]
       interval: 30s
       timeout: 10s
       retries: 30
